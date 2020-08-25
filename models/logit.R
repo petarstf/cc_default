@@ -31,7 +31,7 @@ h2o.removeAll()
 
 grid <- grid_random(parameters(mixture(),
                                penalty()),
-                    size = 200)
+                    size = 2000)
 
 params <- list(alpha = unique(grid$mixture),
                lambda = unique(grid$penalty))
@@ -39,7 +39,7 @@ params <- list(alpha = unique(grid$mixture),
 search_criteria <- list(strategy = 'RandomDiscrete',
                         stopping_metric = 'AUC',
                         stopping_rounds = 5,
-                        max_models = 1,
+                        max_models = 10,
                         seed = 11)
 
 train_grid(algorithm = 'glm',
@@ -52,3 +52,6 @@ log_grid <- h2o.loadGrid('grids/glm_grid_featured/glm_grid_featured')
 log_best <- h2o.getModel(log_grid@model_ids[[1]])
 
 h2o.performance(log_best, as.h2o(test_featured_baked))
+
+
+h2o.varimp_plot(log_best)

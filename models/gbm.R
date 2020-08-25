@@ -15,23 +15,23 @@ source('functions/train_grid.R')
 
 # Recipes ----
 
-rec <- recipe(default ~ ., train_data) %>% 
+rec <- recipe(default ~ ., train_featured) %>% 
   step_rm(id) %>% 
   prep()
 
-rec2 <- recipe(default ~ ., train_data) %>% 
+rec2 <- recipe(default ~ ., train_featured) %>% 
   step_rm(id) %>% 
   step_normalize(all_numeric()) %>% 
   prep()
 
-rec3 <- recipe(default ~ ., train_data) %>% 
+rec3 <- recipe(default ~ ., train_featured) %>% 
   step_rm(id) %>% 
   step_dummy(all_nominal(), -all_outcomes()) %>% 
   step_nzv(all_predictors()) %>% 
   step_zv(all_predictors()) %>% 
   prep()
 
-rec4 <- recipe(default ~ ., train_data) %>% 
+rec4 <- recipe(default ~ ., train_featured) %>% 
   step_rm(id) %>% 
   step_normalize(all_numeric()) %>% 
   step_dummy(all_nominal(), -all_outcomes()) %>% 
@@ -40,12 +40,12 @@ rec4 <- recipe(default ~ ., train_data) %>%
   prep()
 
 
-rec5 <- recipe(default ~ ., train_data) %>% 
+rec5 <- recipe(default ~ ., train_featured) %>% 
   step_rm(id) %>% 
   step_dummy(all_nominal(), -all_outcomes()) %>% 
   prep()
 
-rec6 <- recipe(default ~ ., train_data) %>% 
+rec6 <- recipe(default ~ ., train_featured) %>% 
   step_rm(id) %>% 
   step_normalize(all_numeric()) %>% 
   step_dummy(all_nominal(), -all_outcomes()) %>% 
@@ -126,7 +126,7 @@ h2o.removeAll()
 h2o.init()
 h2o.removeAll()
 
-gbm_params <- grid_regular(parameters(finalize(mtry(), train_baked),
+gbm_params <- grid_regular(parameters(finalize(mtry(), train_featured_baked),
                                       min_n(),
                                       tree_depth(),
                                       trees()),
@@ -144,7 +144,7 @@ params <- list(learn_rate = c(1e-3, 3e-3, 5e-3, 1e-4, 3e-4, 5e-4, 1e-5, 3e-5, 5e
 search_criteria = list(strategy = 'RandomDiscrete',
                        stopping_metric = 'AUC',
                        stopping_rounds = 5,
-                       max_models = 1,
+                       max_models = 10,
                        seed = 11)
 
 
@@ -157,3 +157,5 @@ train_grid(algorithm = 'gbm',
 gbm_grid <- h2o.loadGrid('grids/gbm_grid_featured/gbm_grid_featured')
 top_gbm <- h2o.getModel(gbm_grid@model_ids[[1]])
 h2o.performance(top_gbm, as.h2o(test_featured_baked))
+
+h2o.varimp_plot(top_gbm)

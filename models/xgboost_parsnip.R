@@ -1,6 +1,7 @@
 library(janitor)
 library(tidymodels)
 library(tidyverse)
+library(DMwR)
 
 # Load data ----
 
@@ -14,6 +15,9 @@ rec <- recipe(default ~ ., train_featured) %>%
 
 train_featured_baked <- bake(rec, train_featured)
 test_featured_baked <- bake(rec, test_featured)
+
+smote_train_featured <- SMOTE(default ~ ., as.data.frame(train_featured))
+smote_featured_baked <- bake(rec, smote_train_featured)
 
 set.seed(11)
 folds <- vfold_cv(train_featured_baked, v = 5, strata = default)

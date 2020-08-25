@@ -2,3 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+.saved_models
+grids/
+saved_models/
+data/2K21 MP BUILDER DATA FOR TESTING - 2KL Physicals Copy.csv
+nba.R
