@@ -50,3 +50,26 @@ xgb_res <- xgb_mod %>%
             grid = grid,
             metrics = metric_set(accuracy, f_meas, roc_auc, pr_auc, precision, recall, specificity),
             control = control_grid(verbose = T, save_pred = T))
+
+xgb_final <- finalize_model(xgb_mod, xgb_res %>% select_best('f_meas')) %>% 
+  fit(default ~ ., train_featured_baked)
+
+xgb_pred <- bind_cols(predict(xgb_final, test_featured_baked),
+          predict(xgb_final, test_featured_baked, type = 'prob'),
+          default = test_featured_baked$default) %>% 
+  rename(predict = .pred_class, p1 = .pred_1, p0 = .pred_0)
+
+xgb_pred <- get_optimal_predictions(xgb_pred)
+
+bind_rows(bind_cols(bind_rows(accuracy(xgb_pred, default, p_optimal),
+                              f_meas(xgb_pred, default, p_optimal),
+                              recall(xgb_pred, default, p_optimal),
+                              precision(xgb_pred, default, p_optimal)),
+                    model = 'XGB',
+                    threshold = unique(xgb_pred$optimal_ts)),
+          bind_cols(bind_rows(accuracy(xgb_pred, default, predict),
+                              f_meas(xgb_pred, default, predict),
+                              recall(xgb_pred, default, predict),
+                              precision(xgb_pred, default, predict)),
+                    model = 'XGB optimal',
+                    threshold = 0.5))
