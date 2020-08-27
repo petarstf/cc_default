@@ -1,4 +1,5 @@
 library(janitor)
+library(DMwR)
 library(tidymodels)
 library(h2o)
 library(tidyverse)
@@ -142,7 +143,7 @@ params <- list(learn_rate = c(1e-3, 3e-3, 5e-3, 1e-4, 3e-4, 5e-4, 1e-5, 3e-5, 5e
                fold_assignment = c('Random', 'Stratified'))
 
 search_criteria = list(strategy = 'RandomDiscrete',
-                       stopping_metric = 'AUC',
+                       stopping_metric = 'logloss',
                        stopping_rounds = 5,
                        max_models = 10,
                        seed = 11)
@@ -159,3 +160,56 @@ top_gbm <- h2o.getModel(gbm_grid@model_ids[[1]])
 h2o.performance(top_gbm, as.h2o(test_featured_baked))
 
 h2o.varimp_plot(top_gbm)
+
+
+# Sampling ----
+
+rec_down <- recipe(default ~ ., train_featured) %>% 
+  step_rm(id) %>% 
+  themis::step_downsample(default, skip = F) %>% 
+  prep()
+
+rec_up <- recipe(default ~ ., train_featured) %>% 
+  step_rm(id) %>% 
+  themis::step_upsample(default, skip = F) %>% 
+  prep()
+
+downsample_featured_baked <- bake(rec_down, train_featured)
+upsample_featured_baked <- bake(rec_up, train_featured)
+
+# H2o ----
+
+h2o.init()
+h2o.remove()
+
+train_grid(algorithm = 'gbm', 
+           data = downsample_featured_baked,
+           grid_id = 'gbm_grid_downsample',
+           params = params,
+           search_criteria = search_criteria)
+
+gbm_grid_downsample <- h2o.loadGrid('grids/gbm_grid_downsample/gbm_grid_downsample')
+top_gbm_down <- h2o.getModel(gbm_grid_downsample@model_ids[[1]])
+
+train_grid(algorithm = 'gbm', 
+           data = upsample_featured_baked,
+           grid_id = 'gbm_grid_upsample',
+           params = params,
+           search_criteria = search_criteria)
+
+gbm_grid_upsample <- h2o.loadGrid('grids/gbm_grid_upsample/gbm_grid_upsample')
+top_gbm_up <- h2o.getModel(gbm_grid_upsample@model_ids[[1]])
+
+# SMOTE ----
+
+smote_featured <- SMOTE(default ~ ., as.data.frame(train_featured_baked))
+
+train_grid(algorithm = 'gbm', 
+           data = smote_featured,
+           grid_id = 'gbm_grid_smote',
+           params = params,
+           search_criteria = search_criteria)
+
+gbm_grid_smote <- h2o.loadGrid('grids/gbm_grid_smote/gbm_grid_smote')
+top_gbm_smote <- h2o.getModel(gbm_grid_smote@model_ids[[1]])
+h2o.performance(top_gbm_smote, as.h2o(test_featured_baked))
