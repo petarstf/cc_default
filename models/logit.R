@@ -2,15 +2,20 @@ library(janitor)
 library(tidymodels)
 library(h2o)
 library(tidyverse)
+library(doParallel)
+
 
 # Load data ----
 
+cl <- makeCluster(6)
+registerDoParallel(cl)
 source('functions/load_data.R')
 
 
 # Functions ----
 
 source('functions/train_grid.R')
+source('functions/get_optimal_predictions.R')
 
 # Recipes ----
 
@@ -54,4 +59,37 @@ log_best <- h2o.getModel(log_grid@model_ids[[1]])
 h2o.performance(log_best, as.h2o(test_featured_baked))
 
 
-h2o.varimp_plot(log_best)
+h2o.varimp_plot(top_glm)
+top_glm@allparameters
+# Tidymodels ----
+
+log_mod <- logistic_reg(mode = 'classification',
+                        mixture = 0.3435143) %>% 
+  set_engine('glmnet')
+
+log_mod %>% translate
+
+log_res <- log_mod %>% fit(default ~ ., train_featured_baked)
+
+log_pred <- bind_cols(predict(log_res, test_featured_baked),
+          predict(log_res, test_featured_baked, type = 'prob'),
+          default = test_featured_baked$default) %>% 
+  rename(predict = .pred_class, p1 = .pred_1, p0 = .pred_0)
+
+log_pred <- get_optimal_predictions(log_pred)
+
+log_res
+
+accuracy(log_pred, default, predict)
+f_meas(log_pred, default, predict)
+recall(log_pred, default, predict)
+precision(log_pred, default, predict)
+roc_auc(log_pred, default, p1)
+
+accuracy(log_pred, default, p_optimal)
+f_meas(log_pred, default, p_optimal)
+recall(log_pred, default, p_optimal)
+precision(log_pred, default, p_optimal)
+
+vip::vip(log_res)
+

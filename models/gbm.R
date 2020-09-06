@@ -213,3 +213,9 @@ train_grid(algorithm = 'gbm',
 gbm_grid_smote <- h2o.loadGrid('grids/gbm_grid_smote/gbm_grid_smote')
 top_gbm_smote <- h2o.getModel(gbm_grid_smote@model_ids[[1]])
 h2o.performance(top_gbm_smote, as.h2o(test_featured_baked))
+
+gbm_pred <- as_tibble(h2o.predict(top_gbm_smote, as.h2o(test_featured_baked))) %>% 
+  mutate(default = test_featured_baked$default,
+         predict = factor(predict, levels = c(1, 0))) 
+
+f_meas(gbm_pred, default, predict) 

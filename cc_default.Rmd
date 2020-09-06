@@ -1,0 +1,338 @@
+---
+title: "Credit Cards Default"
+author: "Petar Stefanovic"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+
+### Data exploration
+library(janitor)
+library(skimr)
+library(DataExplorer)
+library(plotly)
+library(vip)
+
+### ML
+library(tidymodels)
+library(h2o)
+
+### SMOTE
+library(DMwR)
+
+### Data wrangling
+library(tidyverse)
+
+# load('xgboost_latest.RData')
+# load('temp.RData')
+# load('temp4.RData')
+load('env/total_metrics.RData')
+load('env/new_data.RData')
+load('env/eda_env.RData')
+# load('env/h2o_met.RData')
+# load('env/xgb_met.RData')
+# load('env/lgbm_met.RData')
+# load('env/glm_met.RData')
+# load('env/lgbm_conf.RData')
+# load('env/xgb_conf.RData')
+# load('env/xgb_vip.RData')
+# load('env/glm_vip.RData')
+```
+Exploratory Data Analysis {data-orientation=rows}
+====================================
+
+Row { vertical_layout: fill }
+-----------------------------------------------------------------------
+### Data - Cleaned
+
+```{r}
+DT::datatable(total_metrics)
+```
+<style> #DTtest{ overflow: auto; } </style>
+Row
+-----------------------------------------------------------------------
+
+### Correlation plot
+```{r}
+data_featured %>% 
+  correlationfunnel::binarize() %>%
+  correlationfunnel::correlate(default__1) %>% 
+  correlationfunnel::plot_correlation_funnel(interactive = T)
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Class balance
+
+```{r}
+plot_class_bal
+```
+
+
+### Default per gender
+
+```{r}
+plot_sex_default_before
+```
+
+<!-- ### third col -->
+<!-- ```{r} -->
+<!-- ggplotly(plot_age, tooltip = 'text') -->
+<!-- ``` -->
+
+Row
+-----------------------------------------------------------------------
+
+### Age histogram
+
+```{r}
+ggplotly(plot_age, tooltip = 'text')
+```
+
+### Grouped per age
+
+```{r}
+ggplotly(plot_age_groups, tooltip = 'text')
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Education
+```{r}
+ggplotly(plot_edu_before, tooltip = 'text')
+```
+
+
+### Education - cleaned
+```{r}
+ggplotly(plot_edu_after, tooltip = 'text')
+```
+
+Row
+---------------------------
+
+### Marriage - multiple unknowns
+```{r}
+ggplotly(plot_marriage_before, tooltip = 'text')
+```
+
+### Marriage - cleaned
+```{r}
+ggplotly(plot_marriage_after, tooltip = 'text')
+```
+
+Row
+----------------------------------------------------------------------
+
+### Pay before
+
+```{r}
+plot_pay_before
+```
+
+
+### Pay after
+
+```{r}
+plot_pay_after
+```
+
+Row
+-----------------------------------------------
+
+
+
+
+
+XGBoost {data-orientation=rows}
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Xgboost scores
+
+```{r}
+DT::datatable(xgb_metrics)
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Xgboost - Confusion matrix
+
+```{r}
+conf_xgb_reg
+```   
+
+### Xgboost - Variable importance plot
+
+```{r}
+vip_xgb
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Xgboost Downsampling - Confusion Matrix
+
+```{r}
+conf_xgb_down
+```
+
+### Xgboost Downsampling - Variable importance plot
+
+```{r}
+vip_xgb_down
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Xgboost Upsampling - Confusion Matrix
+
+```{r}
+conf_xgb_up
+```
+
+
+### Xgboost Upsampling - Variable Importance Plot
+
+```{r}
+vip_xgb_up
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Xgboost SMOTE - Confusion Matrix
+
+```{r}
+conf_xgb_smote
+```
+
+### Xgboost SMOTE - Variable Importance Plot
+
+```{r}
+vip_xgb_smote
+```
+
+
+
+
+LightGBM {data-orientation=rows}
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### LightGBM scores
+
+```{r}
+DT::datatable(lgbm_metrics)
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### LightGBM - Confusion matrix
+
+```{r}
+conf_lgbm_regular
+```   
+
+
+Row
+-----------------------------------------------------------------------
+
+### LightGBM Downsampling - Confusion Matrix
+
+```{r}
+conf_lgbm_down
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### LightGBM Upsampling - Confusion Matrix
+
+```{r}
+conf_lgbm_up
+```
+
+
+
+Row
+-----------------------------------------------------------------------
+
+### LightGBM SMOTE - Confusion Matrix
+
+```{r}
+conf_lgbm_smote
+```
+
+
+
+Logistic Regression {data-orientation=rows}
+====================================
+
+Row
+-------------------------------------------------
+
+```{r}
+DT::datatable(glm_metrics)
+```
+
+
+Row
+-------------------------------------------------------------
+### Logistic Regression - Variable Importance Plot
+
+```{r}
+vip_glm
+```   
+
+
+Row
+-----------------------------------------------------------------------
+
+### Logistic Regression - X3, X7, X9 - Variable Importance Plot
+
+```{r}
+vip_glm3
+```
+
+
+Row
+-------------------------------------------------------------
+
+
+### Stacked Ensemble All
+
+```{r}
+# stacked_all_conf_mat
+```
+
+### Stacked Ensemble Top 5
+
+```{r}
+# stacked_top_5_conf_mat
+```
+
+
+
+ 
+<!-- ###### Table 3 -->
+
+<!-- ```{r} -->
+<!-- plot_limitbal_before -->
+<!-- ``` -->
