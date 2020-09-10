@@ -6,7 +6,7 @@ evalf1 <- function(preds, dtrain) {
   f1 <- f_meas_vec(labels, preds)
   f1_score <- ifelse(is.na(f1), 0, f1)
   
-  return(list(name = 'F1_score', 
+  return(list(name = 'f1_score', 
               value = f1_score, 
               higher_better = T))
 }

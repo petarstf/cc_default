@@ -7,5 +7,6 @@ plot_conf_mat <- function(estimate, truth, title) {
     labs(title = title,
          x = 'Prediction',
          y = 'Actual') +
-    theme_bw()
+    theme_bw() +
+    theme(legend.position = 'None')
 }
