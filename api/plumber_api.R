@@ -1,97 +1,73 @@
 library(janitor)
 library(lightgbm)
-library(tidymodels)
 library(tidyverse)
+library(tidymodels)
 library(plumber)
 
-# Load Data ----
-
-load('env/best_model.RData')
-source('functions/get_predictions_parsnip.R')
-source('functions/get_optimal_predictions.R')
-
-# API ----
-
-data <- read_csv('data/UCI_Credit_Card.csv') %>% clean_names
-
-input <- data %>% dplyr::slice(1)
-
 #* Return prediction
-#* @param input
 #* @post /predict
-# function(input) {
-#   input <- input %>% 
-#     clean_names() %>% 
-#     rename(default = default_payment_next_month, pay_1 = pay_0)
-#   
-#   input <- input %>%
-#     mutate_at(vars(contains('pay'), -contains('amt')), ~factor(ifelse(. %in% c(-2, -1, 0), 0, .))) %>% 
-#     mutate(sex = factor(sex),
-#            education = factor(ifelse(education %in% c(0, 4, 5, 6), 4, education)),
-#            marriage = factor(ifelse(marriage %in% c(0, 3), 3, marriage)),
-#            age = factor(ifelse(age <= 30, 0,
-#                                ifelse(age <= 40, 1,
-#                                       ifelse(age <= 50, 2,
-#                                              ifelse(age <= 60, 3, 4))))),
-#            default = factor(default, levels = c(1, 0)))
-#   input <- input %>% 
-#     mutate(months_not_paid = (temp > 0) %>% rowSums,
-#            months_not_paid_sum = (temp*(temp > 0)) %>% rowSums,
-#            months_not_paid_sum_cat = cut(months_not_paid_sum, 
-#                                          breaks = c(-Inf, 1, 10, +Inf), 
-#                                          labels = c(0, 1, 2)))
-#   
-#   get_predictions(lgbm, input)
-# }
+#* @param data Dataframe containing an observation for prediction
+#* @serializer unboxedJSON
+#* @response 201 Class prediction
+#* @response 400 Error message - string
+function(req, res, data = NA) {
+  if(all(is.na(data))) {
+    res$status <- 400
+    msg <- 'Your request did not include a required parameter.'
+    res$body <- msg
+    list(error = jsonlite::unbox(msg))
 
-
-get_pred <- function(input) {
-  input <- input %>% 
-    clean_names() %>% 
-    rename(default = default_payment_next_month, pay_1 = pay_0)
+  } else if(!setequal(names(data), column_names)) {
+      res$status <- 400
+      msg <- 'Your request parameter does not have a required format.'
+      res$body <- msg
+      list(error = jsonlite::unbox(msg))
+      
+  } else {
+    
+    data <- data %>%
+      clean_names() %>%
+      rename(pay_1 = pay_0) %>% 
+      select(-id)
   
-  input <- input %>%
-    mutate_at(vars(contains('pay'), -contains('amt')), ~factor(ifelse(. %in% c(-2, -1, 0), 0, .))) %>% 
-    mutate(sex = factor(sex),
-           education = factor(ifelse(education %in% c(0, 4, 5, 6), 4, education)),
-           marriage = factor(ifelse(marriage %in% c(0, 3), 3, marriage)),
-           age = factor(ifelse(age <= 30, 0,
-                               ifelse(age <= 40, 1,
-                                      ifelse(age <= 50, 2,
-                                             ifelse(age <= 60, 3, 4))))),
-           default = factor(default, levels = c(1, 0)))
+    temp <- data %>% select(contains('pay'), -contains('amt'))
   
-  temp <- input %>% select(contains('pay'), -contains('amt'))
+    data <- data %>%
+      mutate_at(vars(contains('pay'), -contains('amt')), ~factor(ifelse(. %in% c(-2, -1, 0), 0, .))) %>%
+      mutate(sex = factor(sex),
+             education = factor(ifelse(education %in% c(0, 4, 5, 6), 4, education)),
+             marriage = factor(ifelse(marriage %in% c(0, 3), 3, marriage)),
+             age = factor(ifelse(age <= 30, 0,
+                                 ifelse(age <= 40, 1,
+                                        ifelse(age <= 50, 2,
+                                               ifelse(age <= 60, 3, 4))))),
+             months_not_paid = (temp > 0) %>% rowSums,
+             months_not_paid_sum = (temp*(temp > 0)) %>% rowSums,
+             months_not_paid_sum_cat = cut(months_not_paid_sum,
+                                           breaks = c(-Inf, 1, 10, +Inf),
+                                           labels = c(0, 1, 2)),
+             rem_amt1 = bill_amt1 - pay_amt1,
+             rem_amt2 = bill_amt2 - pay_amt2,
+             rem_amt3 = bill_amt3 - pay_amt3,
+             rem_amt4 = bill_amt4 - pay_amt4,
+             rem_amt5 = bill_amt5 - pay_amt5,
+             rem_amt6 = bill_amt6 - pay_amt6,
+             pay_rate1 = pay_amt1 / limit_bal,
+             pay_rate2 = pay_amt2 / limit_bal,
+             pay_rate3 = pay_amt3 / limit_bal,
+             pay_rate4 = pay_amt4 / limit_bal,
+             pay_rate5 = pay_amt5 / limit_bal,
+             pay_rate6 = pay_amt6 / limit_bal)
   
-  print(temp)
-  
-  input <- input %>% 
-    mutate(months_not_paid = (temp > 0) %>% rowSums,
-           months_not_paid_sum = (temp*(temp > 0)) %>% rowSums,
-           months_not_paid_sum_cat = cut(months_not_paid_sum, 
-                                         breaks = c(-Inf, 1, 10, +Inf), 
-                                         labels = c(0, 1, 2))) %>% 
-    select(starts_with('months'), everything())
-  
-  input %>% view
-  
-  input <- input %>%
-    mutate(rem_amt1 = bill_amt1 - pay_amt1,
-           rem_amt2 = bill_amt2 - pay_amt2,
-           rem_amt3 = bill_amt3 - pay_amt3,
-           rem_amt4 = bill_amt4 - pay_amt4,
-           rem_amt5 = bill_amt5 - pay_amt5,
-           rem_amt6 = bill_amt6 - pay_amt6,
-           pay_rate1 = pay_amt1 / limit_bal,
-           pay_rate2 = pay_amt2 / limit_bal,
-           pay_rate3 = pay_amt3 / limit_bal,
-           pay_rate4 = pay_amt4 / limit_bal,
-           pay_rate5 = pay_amt5 / limit_bal,
-           pay_rate6 = pay_amt6 / limit_bal)
-  # get_predictions(lgbm, input)
+    res$status <- 201
+    
+    tibble(predict_probability = predict(lgbm, data.matrix(data)),
+           predict_class = factor(ifelse(predict_probability > 0.5, 1, 0), 
+                                  levels = c(1, 0)),
+           optimal_threshold = 0.232,
+           predict_class_optimal = factor(ifelse(predict_probability > optimal_threshold, 1, 0), 
+                                          levels = c(1, 0)))
+    
+  }
+    
 }
-
-input <- get_pred(input = input)
-data.matrix(input)
-predict(lgbm, data.matrix(input))
-get_predictions(lgbm, input)

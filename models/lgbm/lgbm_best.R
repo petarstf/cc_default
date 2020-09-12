@@ -15,6 +15,10 @@ source('functions/evalf1.R')
 source('functions/get_vip_lgbm.R')
 source('functions/plot_conf_mat.R')
 
+data %>% 
+  slice(1) %>% 
+  jsonlite::toJSON()
+
 # Recipes ----
 
 rec <- recipe(default ~ ., train_featured) %>% 
@@ -245,3 +249,4 @@ save.image('env/lgbm_conf.RData')
 #                     model = 'LightGBM - Regular - Threshold'))
 
 
+lgb.save(lgbm, 'saved_models/lightgbm', num_iteration = 156)
