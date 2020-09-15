@@ -6,3 +6,4 @@
 grids/
 saved_models/
 env/
+*.png

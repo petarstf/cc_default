@@ -88,8 +88,9 @@ gains_custom <- lgbm_pred %>%
          samples = cumsum(total))
 
 gains_plot <- gains_custom %>% 
+  mutate(samples = bucket * 10) %>% 
   ggplot() +
-  geom_line(aes(bucket * 10, gain)) +
+  geom_line(aes(samples, gain)) +
   labs(title = 'Gain Chart',
        x = '% of samples',
        y = 'Gain') +
@@ -97,8 +98,8 @@ gains_plot <- gains_custom %>%
   scale_x_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) +
   theme(axis.text = element_text(size = 13),
         axis.title = element_text(size = 14)) +
-  geom_point(aes(bucket * 10, gain)) +
-  geom_label(aes(bucket * 10, gain, label = round(gain, 2)), nudge_x = 7.5, nudge_y = -2)
+  geom_point(aes(samples, gain)) +
+  geom_label(aes(samples, gain, label = round(gain, 2)), nudge_x = 7.5, nudge_y = -2)
 
 plotly::ggplotly(gains_plot)
 
@@ -106,7 +107,7 @@ plotly::ggplotly(gains_plot)
 # Custom way to gains chart 2 ----
 
 
-lgbm_pred %>% 
+gains_custom <- lgbm_pred %>% 
   arrange(desc(p1)) %>% 
   mutate(default = as.numeric(as.character(default)),
          predict = as.numeric(as.character(predict)),
@@ -121,5 +122,15 @@ lgbm_pred %>%
          bucket = rev(bucket))
             
 
-lgbm_pred %>% 
-  summarise(across(p1, ))
+gains_custom %>% 
+  mutate(samples = bucket * 10) %>% 
+  ggplot() +
+  geom_line(aes(samples, gain)) +
+  labs(title = 'Gain Chart',
+       x = '% of samples',
+       y = 'Gain') +
+  scale_y_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) +
+  scale_x_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) +
+  theme(axis.text = element_text(size = 13),
+        axis.title = element_text(size = 14)) +
+  geom_point(aes(samples, gain))

@@ -1,0 +1,8 @@
+FROM rocker/r-ver:4.0.2
+
+## Install R Packages
+
+RUN R -e "devtools::install_version('janitor', version = '2.0.1', dependencies = T)"
+
+RUN R -e "devtools::install_version('janitor', version = '2.0.1', dependencies = T)"
+
