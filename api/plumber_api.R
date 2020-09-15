@@ -61,13 +61,13 @@ function(req, res, data = NA) {
   
     res$status <- 201
     
-    tibble(predict_probability = predict(lgbm, data.matrix(data)),
-           predict_class = factor(ifelse(predict_probability > 0.5, 1, 0), 
+    tibble(predict_probability = stats::predict(lgbm, data.matrix(data)),
+           predict_class = factor(ifelse(predict_probability > 0.5, 1, 0),
                                   levels = c(1, 0)),
            optimal_threshold = 0.232,
-           predict_class_optimal = factor(ifelse(predict_probability > optimal_threshold, 1, 0), 
+           predict_class_optimal = factor(ifelse(predict_probability > optimal_threshold, 1, 0),
                                           levels = c(1, 0)))
-    
+
   }
     
 }
