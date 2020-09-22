@@ -6,8 +6,8 @@ library(tidyverse)
 
 # Load and prep the data ----
 
-source('functions/load_data.R')
-source('functions/train_grid.R')
+source('01_functions/load_data.R')
+source('01_functions/train_grid.R')
 
 doParallel::registerDoParallel()
 
@@ -145,4 +145,4 @@ svm_res <- svm_mod %>%
             metrics = metric_set(accuracy, roc_auc, pr_auc, f_meas),
             control = control_grid(verbose = T, save_pred = T))
 
-save.image(file='env/parsnip_env.RData')
+save.image(file='03_env/parsnip_env.RData')

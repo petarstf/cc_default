@@ -10,7 +10,7 @@ library(correlationfunnel)
 
 # Load Data ----
 
-source('functions/load_data.R')
+source('01_functions/load_data.R')
 
 round_up <- function(metrics) {
   metrics %>% 
@@ -114,7 +114,7 @@ metrics_tbl <- tibble(Name = c('accuracy', 'recall', 'precision', 'f_meas', 'roc
                                   '/',
                                   'max(Recall + True Negative / (True Negative + False Positive)'))
 
-# load('env/total_metrics.RData')
-# save.image('env/total_metrics.RData')
+# load('03_env/total_metrics.RData')
+# save.image('03_env/total_metrics.RData')
 
 # rm(list = (setdiff(ls(), ls(pattern = 'conf_glm'))))

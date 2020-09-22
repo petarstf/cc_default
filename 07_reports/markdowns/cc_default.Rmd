@@ -25,11 +25,11 @@ library(DMwR)
 ### Data wrangling
 library(tidyverse)
 
-load('env/eda_data.RData')
-load('env/total_metrics.RData')
-load('env/log_data.RData')
-load('env/gains_n_lift.RData')
-load('env/data_problems.RData')
+load('../../03_env/eda_data.RData')
+load('../../03_env/total_metrics.RData')
+load('../../03_env/log_data.RData')
+load('../../03_env/gains_n_lift.RData')
+load('../../03_env/data_problems.RData')
 ```
 
 Feature description {data-orientation=rows}

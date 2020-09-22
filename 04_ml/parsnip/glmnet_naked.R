@@ -4,9 +4,9 @@ library(tidyverse)
 
 # Load Data ----
 
-source('functions/plot_conf_mat.R')
-source('functions/get_predictions_parsnip.R')
-source('functions/get_optimal_predictions.R')
+source('01_functions/plot_conf_mat.R')
+source('01_functions/get_predictions_parsnip.R')
+source('01_functions/get_optimal_predictions.R')
 
 data <- read_csv('data/UCI_Credit_Card.csv') %>% clean_names %>% 
   rename(default = default_payment_next_month, pay_1 = pay_0) %>% 
@@ -43,4 +43,4 @@ log_metrics <- log_metrics %>%
 
 rm(list = (setdiff(ls(), c('conf_log', 'log_metrics'))))
 
-save.image('env/log_data.RData')
+save.image('03_env/log_data.RData')

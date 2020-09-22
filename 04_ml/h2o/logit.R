@@ -9,13 +9,13 @@ library(doParallel)
 
 cl <- makeCluster(6)
 registerDoParallel(cl)
-source('functions/load_data.R')
+source('01_functions/load_data.R')
 
 
 # Functions ----
 
-source('functions/train_grid.R')
-source('functions/get_optimal_predictions.R')
+source('01_functions/train_grid.R')
+source('01_functions/get_optimal_predictions.R')
 
 # Recipes ----
 

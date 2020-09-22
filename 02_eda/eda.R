@@ -6,7 +6,7 @@ library(plotly)
 library(patchwork)
 
 # Load Data ----
-source('functions/load_data.R')
+source('01_functions/load_data.R')
 
 plot_proportion <- function(column, data = data_featured, title, xlabels = '') {
   column <- enquo(column)

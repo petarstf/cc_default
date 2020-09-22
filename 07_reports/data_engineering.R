@@ -7,8 +7,8 @@ library(h2o)
 
 # Load data ----
 
-source('functions/load_data.R')
-source('functions/train_grid.R')
+source('01_functions/load_data.R')
+source('01_functions/train_grid.R')
 
 temp <- data %>% 
   select(contains('pay'), -contains('amt'))
@@ -261,7 +261,7 @@ final_stack <- h2o.stackedEnsemble(y = 'default',
                                    base_models = c(stack, stack_smote),
                                    seed = 11)
 
-h2o.saveModel(stack, 'saved_models/')
+h2o.saveModel(stack, '05_saved_models/')
 
 h2o.performance(h2o.getModel(gbm_90_chinese_grid@model_ids[[1]]), as.h2o(test_chinese))
 

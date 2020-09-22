@@ -8,10 +8,9 @@ library(vip)
 
 # Load data ----
 
-source('functions/load_data.R')
-
-source('functions/get_predictions_parsnip.R')
-source('functions/get_optimal_predictions.R')
+source('01_functions/load_data.R')
+source('01_functions/get_predictions_parsnip.R')
+source('01_functions/get_optimal_predictions.R')
 
 
 registerDoParallel(cores = parallel::detectCores(logical = F))
@@ -329,12 +328,12 @@ metrics <- bind_rows(metrics,
 glmnet_metrics <- glmnet_metrics %>% 
   mutate_at(vars(threshold), ~ifelse(. == -Inf, 0.5, .))
 
-save.image('env/glmnet_metrics.RData')
+save.image('03_env/glmnet_metrics.RData')
 
 glmnet_metrics <- metrics
 rm(list = (setdiff(ls(), ls(pattern = 'glmnet_metrics'))))
 
-save.image('env/glm_met.RData')
+save.image('03_env/glm_met.RData')
 
 
 # Variable Importance Plots ----
@@ -428,4 +427,4 @@ vip_glm3_smote <- vip(glm3_smote_vip, mapping = aes(fill = Variable), aes = list
 
 rm(list = (setdiff(ls(), c(ls(pattern = 'vip_'), ls(pattern = 'conf_'), 'glmnet_metrics'))))
 
-save.image('env/glm_data.RData')
+save.image('03_env/glm_data.RData')

@@ -7,10 +7,9 @@ library(tictoc)
 
 # Load data ----
 
-source('functions/load_data.R')
-
-source('functions/get_predictions_parsnip.R')
-source('functions/get_optimal_predictions.R')
+source('01_functions/load_data.R')
+source('01_functions/get_predictions_parsnip.R')
+source('01_functions/get_optimal_predictions.R')
 
 registerDoParallel(cores = 6)
 
@@ -240,10 +239,10 @@ conf_xgb_smote_ts <- plot_conf_mat(xgb_pred_smote$p_optimal,
                                  'XGBoost - SMOTE - Threshold')
 
 
-save.image('env/xgboost_metrics_1.RData')
+# save.image('03_env/xgboost_metrics_1.RData')
 
 xgb_metrics %>% 
   select(-.estimator)
 
 rm(list = setdiff(ls(), 'xgb_metrics'))
-save.image('env/xgb_met.RData')
+# save.image('03_env/xgb_met.RData')

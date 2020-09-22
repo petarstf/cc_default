@@ -8,19 +8,18 @@ library(furrr)
 
 # Load data ----
 
-source('functions/load_data.R')
-source('functions/get_optimal_predictions.R')
-source('functions/get_predictions_parsnip.R')
-
-source('functions/plot_conf_mat.R')
-source('functions/plot_rate_mat.R')
+source('01_functions/load_data.R')
+source('01_functions/get_optimal_predictions.R')
+source('01_functions/get_predictions_parsnip.R')
+source('01_functions/plot_conf_mat.R')
+source('01_functions/plot_rate_mat.R')
 
 # Load models ----
 
 # lgbm <- lgb.load('saved_models/lightgbm')
-load('env/lightgbm_pred.RData')
-load('env/glm_naked_predictions.RData')
-load('env/glm_smote_predictions.RData')
+load('03_env/lightgbm_pred.RData')
+load('03_env/glm_naked_predictions.RData')
+load('03_env/glm_smote_predictions.RData')
 
 rec <- recipe(default ~ ., train_featured) %>% 
   step_rm(id) %>% 

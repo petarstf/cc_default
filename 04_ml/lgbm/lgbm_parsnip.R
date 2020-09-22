@@ -5,7 +5,7 @@ library(tidyverse)
 
 # Load data ----
 
-source('functions/load_data.R')
+source('01_functions/load_data.R')
 doParallel::registerDoParallel()
 
 # Recipes ----
@@ -88,7 +88,7 @@ lgbm_pred <- bind_cols(predict(lgbm, test_featured_baked),
   rename(predict = .pred_class, p1 = .pred_1, p0 = .pred_0)
 
 
-save.image('env/lgbm_env.RData')
+save.image('03_env/lgbm_env.RData')
 
 lgbm_pred <- lgbm_pred %>% 
   rename(predict = .pred_class, p1 = .pred_1, p0 = .pred_0)

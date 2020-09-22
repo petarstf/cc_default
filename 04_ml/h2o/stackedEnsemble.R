@@ -5,13 +5,13 @@ library(tidyverse)
 
 # Load data ----
 
-source('functions/load_data.R')
+source('01_functions/load_data.R')
 
 
 
 # Functions ----
 
-source('functions/train_grid.R')
+source('01_functions/train_grid.R')
 
 # Recipes ----
 

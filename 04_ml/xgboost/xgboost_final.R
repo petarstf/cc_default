@@ -10,10 +10,10 @@ library(furrr)
 
 # Load functions ----
 
-source('functions/load_data.R')
-source('functions/get_predictions_parsnip.R')
-source('functions/get_optimal_predictions.R')
-source('functions/evalerr_xgb.R')
+source('01_functions/load_data.R')
+source('01_functions/get_predictions_parsnip.R')
+source('01_functions/get_optimal_predictions.R')
+source('01_functions/evalerr_xgb.R')
 
 registerDoParallel(cores = 6)
 

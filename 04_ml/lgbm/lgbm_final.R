@@ -10,10 +10,10 @@ library(tictoc)
 # Data prep ----
 
 
-source('functions/load_data.R')
+source('01_functions/load_data.R')
 
-source('functions/get_predictions_parsnip.R')
-source('functions/get_optimal_predictions.R')
+source('01_functions/get_predictions_parsnip.R')
+source('01_functions/get_optimal_predictions.R')
 
 rec <- recipe(default ~ ., train_featured) %>% 
   step_rm(id) %>% 

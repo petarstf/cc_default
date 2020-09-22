@@ -5,9 +5,9 @@ library(tidyverse)
 
 # Load and prep data ----
 
-source('functions/load_data.R')
-source('functions/get_predictions.R')
-source('functions/get_optimal_predictions.R')
+source('01_functions/load_data.R')
+source('01_functions/get_predictions.R')
+source('01_functions/get_optimal_predictions.R')
 
 # Recipes ----
 
@@ -182,10 +182,10 @@ h2o_metrics <- bind_rows(bind_cols(bind_rows(accuracy(top_gbm_pred, default, p_o
 h2o_metrics %>% 
   arrange(desc(roc_auc))
 
-save.image('env/h2o_metrics.RData')
+save.image('03_env/h2o_metrics.RData')
 
 caret::confusionMatrix(top_rf_pred$p_optimal, top_rf_pred$default, mode='everything')
 
 rm(list = (setdiff(ls(), 'h2o_metrics')))
 
-save.image('env/h2o_met.RData')
+save.image('03_env/h2o_met.RData')

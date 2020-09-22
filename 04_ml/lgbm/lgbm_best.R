@@ -9,11 +9,11 @@ library(vip)
 
 # Load data ----
 
-source('functions/load_data.R')
-source('functions/get_optimal_predictions.R')
-source('functions/evalf1.R')
-source('functions/get_vip_lgbm.R')
-source('functions/plot_conf_mat.R')
+source('01_functions/load_data.R')
+source('01_functions/get_optimal_predictions.R')
+source('01_functions/evalf1.R')
+source('01_functions/get_vip_lgbm.R')
+source('01_functions/plot_conf_mat.R')
 
 data %>% 
   slice(1) %>% 
@@ -217,7 +217,7 @@ lgbm_metrics %>% view
 
 rm(list = (setdiff(ls(), 'lgbm_metrics')))
 
-save.image('env/lgbm_met.RData')
+save.image('03_env/lgbm_met.RData')
 
 conf_lgbm_reg <- plot_conf_mat(lgbm_pred$predict, lgbm_pred$default, 'LightGBM')
 conf_lgbm_down <- plot_conf_mat(lgbm_down_pred$predict, lgbm_down_pred$default, 'LightGBM Downsample')
@@ -229,11 +229,11 @@ conf_lgbm_down_ts <- plot_conf_mat(lgbm_down_pred$p_optimal, lgbm_down_pred$defa
 conf_lgbm_up_ts <- plot_conf_mat(lgbm_up_pred$p_optimal, lgbm_up_pred$default, 'LightGBM Upsample - Threshold')
 conf_lgbm_smote_ts <- plot_conf_mat(lgbm_smote_pred$p_optimal, lgbm_smote_pred$default, 'LightGBM SMOTE - Threshold')
 
-save.image('env/lgbm_best.RData')
+save.image('03_env/lgbm_best.RData')
 
 rm(list = (setdiff(ls(), ls(pattern = 'conf_'))))
 
-save.image('env/lgbm_conf.RData')
+save.image('03_env/lgbm_conf.RData')
 # 
 # bind_rows(bind_cols(bind_rows(accuracy(lgbm_preds, default, predict),
 #                               f_meas(lgbm_preds, default, predict),
@@ -249,4 +249,4 @@ save.image('env/lgbm_conf.RData')
 #                     model = 'LightGBM - Regular - Threshold'))
 
 
-lgb.save(lgbm, 'saved_models/lightgbm', num_iteration = 156)
+lgb.save(lgbm, '05_saved_models/lightgbm', num_iteration = 156)

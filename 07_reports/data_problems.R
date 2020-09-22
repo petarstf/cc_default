@@ -4,7 +4,7 @@ library(tidyverse)
 
 # Preload ----
 
-source('functions/load_data.R')
+source('01_functions/load_data.R')
 
 bill_amt_ltz <- data_featured %>% 
   select(limit_bal, contains('bill'), contains('pay'), default, -contains('rate'), contains('rem')) %>% 
