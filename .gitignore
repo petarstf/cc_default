@@ -4,6 +4,7 @@
 .Ruserdata
 .saved_models
 grids/
-saved_models/
-env/
+05_saved_models/
+03_env/
 *.png
+*.html

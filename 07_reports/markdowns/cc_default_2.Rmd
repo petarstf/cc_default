@@ -1,0 +1,806 @@
+---
+title: "Credit Cards Default"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+
+### Data exploration
+library(janitor)
+library(skimr)
+library(DataExplorer)
+library(plotly)
+library(vip)
+
+### ML
+library(tidymodels)
+library(h2o)
+
+### SMOTE
+library(DMwR)
+
+### Data wrangling
+library(tidyverse)
+
+load('env/eda_data.RData')
+load('env/total_metrics.RData')
+load('env/log_data.RData')
+load('env/gains_n_lift.RData')
+load('env/data_problems.RData')
+```
+
+Feature description {data-orientation=rows}
+====================================
+
+Row { vertical_layout: scroll, data-height=1700 }
+-----------------------------------------------------------------------
+
+### Predefined dataset variables - cleaned
+
+```{r}
+knitr::kable(variables_tbl)
+```
+
+Row { vertical_layout: scroll, data-height=1700 }
+-----------------------------------------------------------------------
+
+### Custom engineered variables
+
+```{r}
+knitr::kable(variables_custom_tbl)
+```
+
+Exploratory Data Analysis {data-orientation=rows}
+====================================
+
+Row {data-height=750}
+-----------------------------------------------------------------------
+
+### Correlation plot
+```{r}
+corr_funnel_plot
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Class balance
+
+```{r}
+plot_class_balance
+```
+
+
+### Default per gender
+
+```{r}
+plot_sex
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Age grouped
+
+```{r}
+plot_age
+```
+
+
+### Education
+```{r}
+plot_education
+```
+
+### Marriage 
+```{r}
+plot_marriage
+```
+
+Row
+------------------------------
+
+### Months not paid
+```{r}
+plot_months_not_paid
+```
+
+### Months not paid
+```{r}
+plot_months_not_paid_sum
+```
+
+### Months not paid
+```{r}
+plot_months_not_paid_sum_cat
+```
+
+Row { .tabset .tabset-fade }
+----------------------------------------------------------------------
+
+### Pay_1 
+
+```{r}
+plot_pay_1 %>% layout(width = 900)
+```
+
+### Pay_2 
+
+```{r}
+plot_pay_2 %>% layout(width = 900)
+```
+
+### Pay_3 
+
+```{r}
+plot_pay_3 %>% layout(width = 900)
+```
+
+### Pay_4
+
+```{r}
+plot_pay_4 %>% layout(width = 900)
+```
+
+### Pay_5
+
+```{r}
+plot_pay_5 %>% layout(width = 900)
+```
+
+### Pay_6
+
+```{r}
+plot_pay_6 %>% layout(width = 900)
+```
+
+Model comparison {data-orientation=rows}
+=======================================================
+
+Row { vertical_layout: fill }
+-----------------------------------------------------------------------
+
+### Metrics
+
+```{r}
+knitr::kable(metrics_tbl)
+```
+
+
+Row { vertical_layout: fill }
+-----------------------------------------------------------------------
+### All Models
+
+```{r}
+DT::datatable(total_metrics)
+```
+<style> #DTtest{ overflow: auto; } </style>
+
+
+
+XGBoost {data-orientation=rows}
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Xgboost scores
+
+```{r}
+DT::datatable(xgb_metrics)
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Xgboost - Confusion matrix
+
+```{r}
+conf_xgb_reg +
+  theme(legend.position = 'None')
+```   
+
+### Xgboost - Confusion matrix
+
+```{r}
+conf_xgb_reg_ts +
+  theme(legend.position = 'None')
+```   
+
+### Xgboost - Variable importance plot
+
+```{r}
+vip_xgb +
+  theme(axis.text = element_text(size = 13))
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Xgboost Downsampling - Confusion Matrix
+
+```{r}
+conf_xgb_down +
+  theme(legend.position = 'None')
+```
+
+### Xgboost Downsampling - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_xgb_down_ts +
+  theme(legend.position = 'None')
+```
+
+### Xgboost Downsampling - Variable importance plot
+
+```{r}
+vip_xgb_down +
+  theme(axis.text = element_text(size = 13))
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Xgboost Upsampling - Confusion Matrix
+
+```{r}
+conf_xgb_up +
+  theme(legend.position = 'None')
+```
+
+### Xgboost Upsampling - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_xgb_up_ts +
+  theme(legend.position = 'None')
+```
+
+### Xgboost Upsampling - Variable Importance Plot
+
+```{r}
+vip_xgb_up +
+  theme(axis.text = element_text(size = 13))
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Xgboost SMOTE - Confusion Matrix
+
+```{r}
+conf_xgb_smote +
+  theme(legend.position = 'None')
+```
+
+### Xgboost SMOTE - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_xgb_smote_ts +
+  theme(legend.position = 'None')
+```
+
+### Xgboost SMOTE - Variable Importance Plot
+
+```{r}
+vip_xgb_smote +
+  theme(axis.text = element_text(size = 13))
+```
+
+
+LightGBM {data-orientation=rows}
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### LightGBM scores
+
+```{r}
+DT::datatable(lgbm_metrics)
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### LightGBM - Confusion matrix
+
+```{r}
+conf_lgbm_reg +
+  theme(legend.position = 'None')
+```   
+
+### LightGBM - Confusion matrix - Optimal Threshold
+
+```{r}
+conf_lgbm_reg_ts +
+  theme(legend.position = 'None')
+```   
+
+### Variable Importance Plot
+
+```{r}
+vip_lgbm_reg +
+  theme(axis.text = element_text(size = 13))
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### LightGBM Downsampling - Confusion Matrix
+
+```{r}
+conf_lgbm_down +
+  theme(legend.position = 'None')
+```
+
+### LightGBM Downsampling - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_lgbm_down_ts +
+  theme(legend.position = 'None')
+```
+
+### Variable Importance Plot
+
+```{r}
+vip_lgbm_down +
+  theme(axis.text = element_text(size = 13))
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### LightGBM Upsampling - Confusion Matrix
+
+```{r}
+conf_lgbm_up +
+  theme(legend.position = 'None')
+```
+
+### LightGBM Upsampling - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_lgbm_up_ts +
+  theme(legend.position = 'None')
+```
+
+### Variable Importance Plot
+
+```{r}
+vip_lgbm_up +
+  theme(axis.text = element_text(size = 13))
+```
+
+
+
+Row
+-----------------------------------------------------------------------
+
+### LightGBM SMOTE - Confusion Matrix
+
+```{r}
+conf_lgbm_smote +
+  theme(legend.position = 'None')
+```
+
+### LightGBM SMOTE - Confusion Matrix
+
+```{r}
+conf_lgbm_smote_ts +
+  theme(legend.position = 'None')
+```
+
+### Variable Importance Plot
+
+```{r}
+vip_lgbm_smote +
+  theme(axis.text = element_text(size = 13))
+```
+
+
+Logistic Regression {data-orientation=rows}
+====================================
+
+Row
+-------------------------------------------------
+
+```{r}
+DT::datatable(glm_metrics %>% filter(str_starts(model, 'GLMNET ')))
+```
+
+
+Row
+-------------------------------------------------------------
+
+### Logistic Regression - Confusion Matrix
+
+```{r}
+conf_glm_regular
+```
+
+### Logistic Regression - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_glm_regular_ts
+```
+
+### Logistic Regression - Variable Importance Plot
+
+```{r}
+vip_glm_reg +
+  theme(axis.text = element_text(size = 13))
+```   
+
+Row
+-------------------------------------------------------------
+
+### Logistic Regression Downsample - Confusion Matrix
+
+```{r}
+conf_glm_down
+```
+
+### Logistic Regression Downsample - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_glm_down_ts
+```
+
+### Logistic Regression Downsample - Variable Importance Plot
+
+```{r}
+vip_glm_down +
+  theme(axis.text = element_text(size = 13))
+```   
+
+Row
+-------------------------------------------------------------
+
+### Logistic Regression Upsample - Confusion Matrix
+
+```{r}
+conf_glm_up
+```
+
+### Logistic Regression Upsample - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_glm_up_ts
+```
+
+### Logistic Regression Upsample - Variable Importance Plot
+
+```{r}
+vip_glm_up +
+  theme(axis.text = element_text(size = 13))
+```   
+
+
+Row
+-------------------------------------------------------------
+
+### Logistic Regression SMOTE - Confusion Matrix
+
+```{r}
+conf_glm_smote
+```
+
+### Logistic Regression SMOTE - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_glm_smote_ts
+```
+
+### Logistic Regression SMOTE - Variable Importance Plot
+
+```{r}
+vip_glm_smote +
+  theme(axis.text = element_text(size = 13))
+```   
+
+
+
+
+
+Logistic Regression - X3, X7, X9 {data-orientation=rows}
+====================================
+
+Row
+-------------------------------------------------
+
+```{r}
+DT::datatable(glm_metrics %>% filter(str_starts(model, 'GLMNET3')))
+```
+
+
+Row
+-------------------------------------------------------------
+
+### Logistic Regression - X3, X7, X9 - Confusion Matrix
+
+```{r}
+conf_glm3_regular
+```
+
+### Logistic Regression - X3, X7, X9 - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_glm3_regular_ts
+```
+
+### Logistic Regression - X3, X7, X9 - Variable Importance Plot
+
+```{r}
+vip_glm3_reg +
+  theme(axis.text = element_text(size = 13))
+```   
+
+Row
+-------------------------------------------------------------
+
+### Logistic Regression Downsample - X3, X7, X9 - Confusion Matrix
+
+```{r}
+conf_glm3_down
+```
+
+### Logistic Regression Downsample - X3, X7, X9 - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_glm3_down_ts
+```
+
+### Logistic Regression Downsample - X3, X7, X9 - Variable Importance Plot
+
+```{r}
+vip_glm3_down +
+  theme(axis.text = element_text(size = 13))
+```   
+
+Row
+-------------------------------------------------------------
+
+### Logistic Regression Upsample - X3, X7, X9 - Confusion Matrix
+
+```{r}
+conf_glm3_up
+```
+
+### Logistic Regression Upsample - X3, X7, X9 - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_glm3_up_ts
+```
+
+### Logistic Regression Upsample - X3, X7, X9 - Variable Importance Plot
+
+```{r}
+vip_glm3_up +
+  theme(axis.text = element_text(size = 13))
+```   
+
+
+Row
+-------------------------------------------------------------
+
+### Logistic Regression SMOTE - X3, X7, X9 - Confusion Matrix
+
+```{r}
+conf_glm3_smote
+```
+
+### Logistic Regression SMOTE - X3, X7, X9 - Confusion Matrix - Optimal Threshold
+
+```{r}
+conf_glm3_smote_ts
+```
+
+### Logistic Regression SMOTE - X3, X7, X9 - Variable Importance Plot
+
+```{r}
+vip_glm3_smote +
+  theme(axis.text = element_text(size = 13))
+```   
+
+
+Final Comparison {data-orientation=rows}
+============================
+
+Row
+---------------------
+
+### Model comparison
+
+```{r}
+# temp <- bind_rows(total_metrics %>% filter(model %in% c('Lightgbm - Threshold', 'GLMNET SMOTE')),
+#           log_metrics) %>% 
+#   select(-library)
+
+DT::datatable(data = comparison_tbl)
+```
+
+
+
+<!-- Row -->
+<!-- ------------------- -->
+
+<!-- ### LightGBM - Threshold -->
+
+<!-- ```{r} -->
+<!-- lgbm_comp_conf_mat_plot -->
+<!-- ``` -->
+
+<!-- ### Logistic Regression - Tuned + SMOTE -->
+
+<!-- ```{r} -->
+<!-- glm_smote_comp_conf_mat_plot -->
+<!-- ``` -->
+
+<!-- ### Logistic Regression - Not tuned -->
+
+<!-- ```{r} -->
+<!-- log_comp_conf_mat_plot -->
+<!-- ``` -->
+
+
+Row
+-------------------
+
+### LightGBM - Threshold
+
+```{r}
+lgbm_comp_rate_mat_plot
+```
+
+### Logistic Regression - Tuned + SMOTE
+
+```{r}
+glm_smote_comp_rate_mat_plot
+```
+
+### Logistic Regression - Not tuned
+
+```{r}
+log_comp_rate_mat_plot
+```
+
+
+
+Business Science { data-orientation=rows }
+=======================
+
+Row 
+------------------
+
+### Gains and Lifts table
+
+```{r}
+DT::datatable(gains_lift)
+```
+
+Row
+------
+
+```{r}
+knitr::kable(desc_tbl %>% rename(Vrednost = name, Opis = desc))
+```
+
+Row
+------------------
+
+### ROC Curve
+
+```{r}
+roc_plot %>% plotly::layout(legend = list(orientation = "h", x = 0, y = -0.3))
+```
+
+
+### Precision vs Recall
+
+```{r}
+pr_plot %>% plotly::layout(legend = list(orientation = "h", x = 0, y = -0.3))
+```
+
+
+
+Row
+------------------
+
+### Gains chart
+
+```{r}
+gains_plot %>% plotly::layout(legend = list(orientation = "h", x = 0, y = -0.3))
+```
+
+
+### Lift chart
+
+```{r}
+lift_plot %>% plotly::layout(legend = list(orientation = "h", x = 0, y = -0.3))
+```
+
+Row
+-----
+
+### Expected Profit Curve
+
+```{r}
+threshold_profit_plot %>% plotly::layout(legend = list(orientation = 'h', x = 0, y = -0.3))
+```
+
+
+Row
+-----
+
+### Cost and Benefits table
+
+```{r}
+knitr::kable(cb_tbl %>% rename(Rate = type, Cost = cost, Benefit = benefit))
+```
+
+
+Data problems {data-orientation=rows}
+=====================================
+
+Row
+-----
+
+### Description
+
+```{r}
+knitr::kable(data_problems_tbl)
+```
+
+Row
+-------
+
+### Bill amount < 0
+
+```{r}
+DT::datatable(bill_amt_ltz %>% select(default, contains('bill')))
+```
+
+Row
+-------
+
+### Duly paid yet default
+
+```{r}
+DT::datatable(duly_paid_default %>% select(default, contains('pay'), -contains('rate'), contains('bill')))
+```
+
+Row
+-------
+
+### Remaining amount < 0
+
+```{r}
+DT::datatable(rem_ltz %>% select(-rowname))
+```
+
+
+<!-- Row -->
+<!-- ------------------------------------------------------------- -->
+
+
+<!-- ### Stacked Ensemble All -->
+
+<!-- ```{r} -->
+<!-- # stacked_all_conf_mat -->
+<!-- ``` -->
+
+<!-- ### Stacked Ensemble Top 5 -->
+
+<!-- ```{r} -->
+<!-- # stacked_top_5_conf_mat -->
+<!-- ``` -->
+
+
