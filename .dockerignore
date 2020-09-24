@@ -1,0 +1,8 @@
+# Ignore everything
+*
+
+# Allow files and directories
+!03_env/columns.RData
+!05_saved_models/lightgbm
+!08_api/plumber.R
+!08_api/predict.R

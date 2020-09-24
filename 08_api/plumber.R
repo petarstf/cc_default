@@ -12,4 +12,4 @@ lgbm <- lgb.load('05_saved_models/lightgbm')
 # Start router ----
 
 root <- pr('08_api/predict.R') %>% 
-  pr_run(port = 8000)
+  pr_run(host = '0.0.0.0')
