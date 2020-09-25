@@ -1,7 +1,7 @@
 library(janitor)
 library(tidyverse)
 
-data <- read_csv('data/UCI_Credit_Card.csv') %>% 
+data <- read_csv('00_data/UCI_Credit_Card.csv') %>% 
   clean_names() %>% 
   rename('default' = 'default_payment_next_month',
          'pay_1' = 'pay_0')
