@@ -3,6 +3,7 @@ library(baguette)
 library(tidymodels)
 library(tidyverse)
 
+registerDoParallel(cores = parallel::detectCores(logical = F))
 
 # Load and prep the data ----
 

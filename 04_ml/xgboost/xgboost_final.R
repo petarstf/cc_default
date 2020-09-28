@@ -8,14 +8,14 @@ library(tictoc)
 library(xgboost)
 library(furrr)
 
+registerDoParallel(cores = parallel::detectCores(logical = F))
+
 # Load functions ----
 
 source('01_functions/load_data.R')
 source('01_functions/get_predictions_parsnip.R')
 source('01_functions/get_optimal_predictions.R')
 source('01_functions/evalerr_xgb.R')
-
-registerDoParallel(cores = 6)
 
 # Data prep ----
 
@@ -122,14 +122,4 @@ xgb_res <- pmap_df(params, ~tibble(cv = xgb.cv(params = list(colsample_bytree = 
                                                maximize = T,
                                                nfold = 5,
                                                stratified = T)))
-
-# xgb_cv <- xgb.cv(params = params,
-#                  data = dtrain,
-#                  nrounds = 344L,
-#                  early_stopping_rounds = 50L,
-#                  feval = evalf1,
-#                  maximize = T,
-#                  nfold = 5,
-#                  stratified = T)
-
 

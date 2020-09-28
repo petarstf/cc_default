@@ -3,10 +3,11 @@ library(tidymodels)
 library(treesnip)
 library(tidyverse)
 
+registerDoParallel(cores = parallel::detectCores(logical = F))
+
 # Load data ----
 
 source('01_functions/load_data.R')
-doParallel::registerDoParallel()
 
 # Recipes ----
 
@@ -56,7 +57,7 @@ grid <- grid_regular(parameters(finalize(mtry(), test_featured_baked %>% select(
 
 set.seed(11)
 grid <- as_tibble(expand.grid(list(mtry = unique(grid$mtry), 
-                                   trees = c(500, 1000, 1500),
+                                   trees = 3000,
                                    min_n = unique(grid$min_n),
                                    tree_depth = unique(grid$tree_depth),
                                    sample_size = seq(0.6, 1, 0.1))) %>% 

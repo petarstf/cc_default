@@ -4,11 +4,10 @@ library(h2o)
 library(tidyverse)
 library(doParallel)
 
+registerDoParallel(cores = parallel::detectCores(logical = F))
 
 # Load data ----
 
-cl <- makeCluster(6)
-registerDoParallel(cl)
 source('01_functions/load_data.R')
 
 

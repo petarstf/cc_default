@@ -113,17 +113,6 @@ test_baked3 <- bake(rec3, test_data)
 test_baked4 <- bake(rec4, test_data)
 test_chinese <- bake(rec_chinese, test_data)
 
-# Factor Analysis ----
-# covmat <- cov(train_data %>% mutate(default = as.numeric(as.character(default))))
-# fa <- factanal(train_data %>% mutate(default = as.numeric(as.character(default))) %>% 
-#            select(-id, -pay_2, -pay_3, -pay_4, -pay_5, -pay_6, 
-#                   -pay_amt1, -pay_amt2, -pay_amt3, -pay_amt4, -pay_amt5, -pay_amt6), 
-#          factors = 7, 
-#          data = train_data %>% mutate(default = as.numeric(as.character(default))), 
-#          rotation = 'varimax')
-# 
-# fa$correlation
-
 # Automl ----
 
 h2o.init()
@@ -257,34 +246,17 @@ stack_smote <- h2o.stackedEnsemble(y = 'default',
 
 
 final_stack <- h2o.stackedEnsemble(y = 'default',
+                                   model_id = 'final_stack',
                                    training_frame = as.h2o(train_baked),
                                    base_models = c(stack, stack_smote),
                                    seed = 11)
 
+# Saving custom StackEnsembles
 h2o.saveModel(stack, '05_saved_models/')
+h2o.saveModel(stack_smote, '05_saved_models/')
+h2o.saveModel(final_stack, '05_saved_models/')
 
 h2o.performance(h2o.getModel(gbm_90_chinese_grid@model_ids[[1]]), as.h2o(test_chinese))
 
 h2o.performance(stack, as.h2o(test_baked))
 h2o.performance(stack_smote, as.h2o(test_baked))
-
-
-temp <- as_tibble(data.frame(quantity = c(12,8,6,4,2,6,12,6,12,2), 
-                             id = c(1,1,1,1,1,1,1,1,2,2), 
-                             unit_price = c(3.95, 4.65, 2.55, 7.95, 7.95, 2.1, 2.95, 2.95, 1.25, 7.95),
-                             recency = c(365, 365, 364, 365, 364, 365, 365, 365, 362, 365),
-                             amount = c(47.4, 37.2, 15.3, 31.8, 15.9, 12.6, 35.4, 17.7, 15, 15.9)))
-
-
-temp %>% 
-  group_by(id) %>% 
-  transmute(min_recency = min(recency),
-         total_quantity = sum(quantity),
-         total_amount = sum(amount)) %>% 
-  ungroup() %>%
-  distinct(id, .keep_all = T)
-
-temp %>% 
-  group_by(id) %>% 
-  summarise(min_r = min(recency), totalq = sum(quantity), totala = sum(amount)) %>% 
-  ungroup()

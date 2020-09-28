@@ -147,7 +147,7 @@ params <- params %>% slice_sample(n = 3)
 set.seed(11)
 temp <- pmap_dfr(params, ~tibble(models = list(lgb.cv(params = list(learning_rate = ..1,
                                                                     num_iterations = ..2,
-                                                                    num_leaves = ..3,
+                                                                    num_leaves = 255,
                                                                     max_depth = ..4,
                                                                     bagging_fraction = ..5,
                                                                     feature_fraction = ..6,

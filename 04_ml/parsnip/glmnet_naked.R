@@ -2,6 +2,8 @@ library(janitor)
 library(tidymodels)
 library(tidyverse)
 
+registerDoParallel(cores = parallel::detectCores(logical = F))
+
 # Load Data ----
 
 source('01_functions/plot_conf_mat.R')

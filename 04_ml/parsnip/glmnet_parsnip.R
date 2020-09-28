@@ -6,6 +6,8 @@ library(doParallel)
 library(tictoc)
 library(vip)
 
+registerDoParallel(cores = parallel::detectCores(logical = F))
+
 # Load data ----
 
 source('01_functions/load_data.R')

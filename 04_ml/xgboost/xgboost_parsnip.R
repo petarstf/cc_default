@@ -5,6 +5,8 @@ library(DMwR)
 library(doParallel)
 library(tictoc)
 
+registerDoParallel(cores = parallel::detectCores(logical = F))
+
 # Load data ----
 
 source('01_functions/load_data.R')
@@ -110,28 +112,9 @@ set.seed(11)
 tic()
 xgb_smote_res <- xgb_cv(smotefolds)
 toc()
-save.image('env/xgboost_parsnip_env1.RData')
 
-xgb_res %>% 
-  show_best('f_meas')
-
-xgb_res_hist %>% 
-  show_best('f_meas')
-
-xgb_res_hist_norm %>% 
-  show_best('f_meas')
-
-xgb_res_reg %>% 
-  show_best('f_meas')
-
-xgb_downsample_res %>% 
-  show_best('f_meas')
-
-xgb_upsample_res %>% 
-  show_best('f_meas')
-
-xgb_smote_res %>% 
-  show_best('f_meas')
+# Save xgboost_parsnip env without models
+# save.image('env/xgboost_parsnip_env1.RData')
 
 xgb_final <- finalize_model(xgb_mod, xgb_res_reg %>% select_best('f_meas')) %>%
   fit(default ~ ., train_featured_baked)
@@ -238,11 +221,13 @@ conf_xgb_smote_ts <- plot_conf_mat(xgb_pred_smote$p_optimal,
                                  xgb_pred_smote$default,
                                  'XGBoost - SMOTE - Threshold')
 
-
-# save.image('03_env/xgboost_metrics_1.RData')
+# Save entire xgboost_parsnip environment
+save.image('03_env/xgboost_metrics_1.RData')
 
 xgb_metrics %>% 
   select(-.estimator)
 
+# Save only xgboost metrics
+
 rm(list = setdiff(ls(), 'xgb_metrics'))
-# save.image('03_env/xgb_met.RData')
+save.image('03_env/xgb_met.RData')

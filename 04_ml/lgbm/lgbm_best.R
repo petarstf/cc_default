@@ -58,7 +58,6 @@ params <- list(objective = 'binary',
                bagging_fraction = 0.152577040181495,
                bagging_seed = 11,
                lambda_l1 = 0.9,
-               # lambda_l2 = 0.1,
                num_leaves = 255L)
 # 
 # set.seed(11)

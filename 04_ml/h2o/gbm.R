@@ -4,6 +4,8 @@ library(tidymodels)
 library(h2o)
 library(tidyverse)
 
+registerDoParallel(cores = parallel::detectCores(logical = F))
+
 # Load data ----
 
 source('01_functions/load_data.R')
