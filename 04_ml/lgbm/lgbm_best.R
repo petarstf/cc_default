@@ -248,4 +248,4 @@ save.image('03_env/lgbm_conf.RData')
 #                     model = 'LightGBM - Regular - Threshold'))
 
 
-lgb.save(lgbm, '05_saved_models/lightgbm', num_iteration = 156)
+lgb.save(lgbm, '05_saved_models/lightgbm_model', num_iteration = 156)

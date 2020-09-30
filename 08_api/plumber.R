@@ -6,10 +6,9 @@ library(plumber)
 
 # Load prerequisites ----
 
-load('03_env/columns.RData')
-lgbm <- lgb.load('05_saved_models/lightgbm')
+lgbm <- lgb.load('05_saved_models/lightgbm_model')
 
 # Start router ----
 
-root <- pr('08_api/predict.R') %>% 
-  pr_run(host = '0.0.0.0')
+root <- pr('08_api/predict_db.R') %>% 
+  pr_run(host = '0.0.0.0', port = 8000)

@@ -1,5 +1,4 @@
 library(janitor)
-
 library(lightgbm)
 library(tidymodels)
 library(tidyverse)
@@ -16,7 +15,7 @@ source('01_functions/plot_rate_mat.R')
 
 # Load models ----
 
-# lgbm <- lgb.load('saved_models/lightgbm')
+# lgbm <- lgb.load('05_saved_models/lightgbm_model')
 load('03_env/lightgbm_pred.RData')
 load('03_env/glm_naked_predictions.RData')
 load('03_env/glm_smote_predictions.RData')
@@ -28,13 +27,31 @@ rec <- recipe(default ~ ., train_featured) %>%
 train_baked <- bake(rec, train_featured)
 test_baked <- bake(rec, test_featured)
 
+test_baked %>% 
+  select(-default) %>% 
+  data.matrix
+# 
+# lgbm_pred <- predict(lgbm, test_baked %>% 
+#                         select(-default) %>% 
+#                         data.matrix) %>% as_tibble
+# 
+# lgbm_pred <- lgbm_pred %>% 
+#   rename(p1 = value) %>% 
+#   mutate(predict = factor(ifelse(p1 > 0.5, 1, 0), levels = c(1, 0)),
+#          threshold = 0.232,
+#          p_optimal = factor(ifelse(p1 > threshold, 1, 0), levels = c(1, 0)),
+#          default = test_baked$default)
+
+
+
 comparison_tbl <- bind_rows(bind_cols(bind_rows(accuracy(lgbm_pred, default, p_optimal),
-                              f_meas(lgbm_pred, default, p_optimal),
-                              recall(lgbm_pred, default, p_optimal),
-                              precision(lgbm_pred, default, p_optimal),
-                              roc_auc(lgbm_pred, default, p1)),
-                    model = 'LightGBM - Optimal Threshold',
-                    threshold = unique(lgbm_pred$optimal_ts)) %>% 
+                                                f_meas(lgbm_pred, default, p_optimal),
+                                                recall(lgbm_pred, default, p_optimal),
+                                                precision(lgbm_pred, default, p_optimal),
+                                                yardstick::
+                                                roc_auc(lgbm_pred, default, p1)),
+                            model = 'LightGBM - Optimal Threshold',
+                            threshold = unique(lgbm_pred$optimal_ts)) %>% 
             select(-.estimator) %>% 
             pivot_wider(names_from = .metric, values_from = .estimate),
           bind_cols(bind_rows(accuracy(glm_smote_pred, default, predict),
@@ -54,8 +71,30 @@ comparison_tbl <- bind_rows(bind_cols(bind_rows(accuracy(lgbm_pred, default, p_o
                     model = 'Logistic Regression Basic',
                     threshold = 0.5) %>% 
             select(-.estimator) %>% 
-            pivot_wider(names_from = .metric, values_from = .estimate)) %>% 
-  mutate(across(c(accuracy, f_meas, recall, precision, roc_auc), .fns = ~round(. * 100, 3)))
+            pivot_wider(names_from = .metric, values_from = .estimate)) %>%
+  # mutate(across(.cols = everything(), .fns = ~ round(., 3))) %>% 
+  bind_cols(tibble(gini = c(ModelMetrics::gini(as.numeric(as.character(lgbm_pred$default)), 
+                                               as.numeric(as.character(lgbm_pred$p_optimal))),
+                            ModelMetrics::gini(as.numeric(as.character(glm_smote_pred$default)), 
+                                               as.numeric(as.character(glm_smote_pred$predict))),
+                            ModelMetrics::gini(as.numeric(as.character(log_pred$default)), 
+                                               as.numeric(as.character(log_pred$predict)))))) %>% 
+  mutate(across(c(accuracy, f_meas, recall, precision, roc_auc, gini), .fns = ~round(., 4))) %>% 
+  rename(Model = model,
+         Threshold = threshold,
+         Accuracy = accuracy,
+         F1_score = f_meas,
+         Recall = recall,
+         Precision = precision,
+         AUC = roc_auc,
+         Gini = gini)
+
+tibble(gini = c(ModelMetrics::gini(as.numeric(as.character(lgbm_pred$default)), 
+                             as.numeric(as.character(lgbm_pred$p_optimal))),
+          ModelMetrics::gini(as.numeric(as.character(glm_smote_pred$default)), 
+                             as.numeric(as.character(glm_smote_pred$predict))),
+          ModelMetrics::gini(as.numeric(as.character(log_pred$default)), 
+                             as.numeric(as.character(log_pred$predict)))))
 
 # LightGBM ----
 # 
@@ -461,3 +500,5 @@ rm(list = (setdiff(ls(), c('comparison_tbl',
                            'glm_smote_profit_ts',
                            'log_profit_ts',
                            ls(pattern = 'plot')))))
+
+save.image('03_env/gains_n_lift.RData')
