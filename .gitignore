@@ -24,7 +24,7 @@ test_data.csv
 
 # Saved ML models
 05_saved_models/*
-!05_saved_models/lightgbm
+!05_saved_models/lightgbm_model
 
 # API
 08_api/predict_db_test.R
