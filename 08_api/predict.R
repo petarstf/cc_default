@@ -4,6 +4,31 @@ library(tidyverse)
 library(tidymodels)
 library(plumber)
 
+column_names <- c("ID",
+                  "LIMIT_BAL",
+                  "SEX",
+                  "EDUCATION",
+                  "MARRIAGE",
+                  "AGE",
+                  "PAY_0",
+                  "PAY_2",
+                  "PAY_3",
+                  "PAY_4",
+                  "PAY_5",
+                  "PAY_6",
+                  "BILL_AMT1",
+                  "BILL_AMT2",
+                  "BILL_AMT3",
+                  "BILL_AMT4",
+                  "BILL_AMT5",
+                  "BILL_AMT6",
+                  "PAY_AMT1",
+                  "PAY_AMT2",
+                  "PAY_AMT3",
+                  "PAY_AMT4",
+                  "PAY_AMT5",
+                  "PAY_AMT6")
+
 #* Return prediction
 #* @post /predict
 #* @param data Dataframe containing an observation for prediction
@@ -21,7 +46,8 @@ function(req, res, data = NA) {
       res$status <- 400
       msg <- 'Your request parameter does not have a required format.'
       res$body <- msg
-      list(error = jsonlite::unbox(msg))
+      list(error = jsonlite::unbox(msg),
+           names = (names(data)))
       
   } else {
     
