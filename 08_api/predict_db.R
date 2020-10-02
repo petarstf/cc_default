@@ -128,7 +128,7 @@ function(req, res) {
                                                               mutate_if(is.character, as.numeric))),
              default = ifelse(probability > 0.231887956925153, 1L, 0L)) %>% 
       select(id, probability, default)
-    print(data)
+    
     # Update db
     pwalk(data, ~ RPostgres::dbClearResult(RPostgres::dbSendQuery(conn = conn,
                                                                 statement = paste('UPDATE client_parameters',

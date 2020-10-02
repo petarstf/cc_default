@@ -2,6 +2,6 @@
 *
 
 # Allow files and directories
-!05_saved_models/lightgbm_model
+!05_saved_models/lightgbm_model.rds
 !08_api/plumber.R
 !08_api/predict_db.R
