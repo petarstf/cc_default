@@ -22,7 +22,9 @@ RUN R -e "devtools::install_version('plumber', version = '1.0.0', dependencies =
 
 RUN R -e "devtools::install_version('DBI', version = '1.1.0', dependencies = T)"
 
-RUN R -e "devtools::install_version('RMariaDB', version = '1.0.10', dependencies = T)"
+RUN R -e "devtools::install_version('RPostgres', version = '1.2.1', dependencies = T)"
+
+RUN R -e "devtools::install_version('jsonlite', version = '1.7.0', dependencies = T)"
 
 # COPY ./03_env/columns.RData /03_env/columns.RData
 

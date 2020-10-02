@@ -4,12 +4,15 @@ library(tidyverse)
 library(tidymodels)
 library(plumber)
 
+
+future::plan('multicore')
+
 # DB conn ----
 
-dbname <- 'ccdefault'
-username <- 'postgres'
-host <- 'localhost'
-password <- 'root'
+# dbname <- 'ccdefault'
+# username <- 'postgres'
+# host <- 'localhost'
+# password <- 'root'
 
 
 # API ----
@@ -21,21 +24,73 @@ password <- 'root'
 #* @response 201 Class prediction
 #* @response 400 Error message - string
 function(req, res) {
+  
+  # DB connection params
+  dbname <- 'ccdefault'
+  username <- 'postgres'
+  host <- 'localhost'
+  password <- 'root'
+  
+  # Establish connection to DB
   conn <- DBI::dbConnect(RPostgres::Postgres(),
                          dbname = dbname,
                          user = username,
                          host = host,
                          password = password)
   
-  data <- tbl(conn, 'clients')
+  # DB Table to work with
+  data <- tbl(conn, 'client_parameters')
   
-  data <- data %>%
+  # Select parameters column from client_parameters
+  params <- data %>%
     as_tibble %>% 
-    clean_names() %>%
-    rename(pay_1 = pay_0) %>% 
-    filter(is.na(probability))
+    filter(is.na(ml_probability)) %>% 
+    select(parameters)
   
+  # Names of model input columns
+  colnames_model <- c("ID_CLIENT",
+                      "LIMIT_BAL",
+                      "SEX",
+                      "EDUCATION",
+                      "MARRIAGE",
+                      "AGE",
+                      "PAY_0",
+                      "PAY_2",
+                      "PAY_3",
+                      "PAY_4",
+                      "PAY_5",
+                      "PAY_6",
+                      "BILL_AMT1",
+                      "BILL_AMT2",
+                      "BILL_AMT3",
+                      "BILL_AMT4",
+                      "BILL_AMT5",
+                      "BILL_AMT6",
+                      "PAY_AMT1",
+                      "PAY_AMT2",
+                      "PAY_AMT3",
+                      "PAY_AMT4",
+                      "PAY_AMT5",
+                      "PAY_AMT6")
+  
+  
+  # Wrangle data to model input format
+  data <- jsonlite::stream_in(textConnection(params$parameters))
   if(dim(data)[1] > 0) {
+    
+    data <- data %>%
+      furrr::future_map_dfc(~ select(., contains('name'), contains('value')) %>% 
+                pivot_wider(names_from = 'parameter_name', values_from = 'parameter_value')) %>% 
+      unnest(everything()) %>% 
+      select(colnames_model)
+    
+    data <- data %>%
+      as_tibble %>% 
+      clean_names() %>%
+      rename(pay_1 = pay_0,
+             id = id_client)
+  
+  
     temp <- data %>% select(contains('pay'), -contains('amt'))
     
     data <- data %>%
@@ -66,22 +121,20 @@ function(req, res) {
              pay_rate6 = pay_amt6 / limit_bal)
     
     
-    
-    
-    
+    # Get model predictions
     data <- data %>%
-      mutate(probability = stats::predict(lgbm, data.matrix(data %>% select(-id, -probability, -default) %>% 
+      mutate(probability = stats::predict(lgbm, data.matrix(data %>% select(-id) %>% 
                                                               mutate_if(is.factor, as.character) %>% 
                                                               mutate_if(is.character, as.numeric))),
              default = ifelse(probability > 0.231887956925153, 1L, 0L)) %>% 
       select(id, probability, default)
-    
-    
+    print(data)
+    # Update db
     pwalk(data, ~ RPostgres::dbClearResult(RPostgres::dbSendQuery(conn = conn,
-                                                                statement = paste('UPDATE clients',
-                                                                                  'SET probability =', ..2, 
-                                                                                  ', "default" =', ..3,
-                                                                                  'WHERE "ID" =', ..1))))
+                                                                statement = paste('UPDATE client_parameters',
+                                                                                  'SET ml_probability =', ..2, 
+                                                                                  ', "ml_class" =', ..3,
+                                                                                  'WHERE "client_id" =', ..1))))
     
     res$status <- 201
     success <- T

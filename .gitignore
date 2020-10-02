@@ -6,6 +6,7 @@
 grids/
 *.png
 *.html
+*.json
 test_data.csv
 
 # Environment
