@@ -8,8 +8,8 @@ future::plan('multicore')
 
 # Load prerequisites ----
 
-# lgbm <- lgb.load('05_saved_models/lightgbm_model')
-lgbm <- lgb.load('05_saved_models/lightgbm_model.rds')
+lgbm <- lgb.load('05_saved_models/lightgbm_model')
+# lgbm <- lgb.load('05_saved_models/lightgbm_model.rds')
 
 # Start router ----
 
