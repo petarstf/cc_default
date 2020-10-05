@@ -4,17 +4,6 @@ library(tidyverse)
 library(tidymodels)
 library(plumber)
 
-
-future::plan('multicore')
-
-# DB conn ----
-
-# dbname <- 'ccdefault'
-# username <- 'postgres'
-# host <- 'localhost'
-# password <- 'root'
-
-
 # API ----
 
 
@@ -25,18 +14,22 @@ future::plan('multicore')
 #* @response 400 Error message - string
 function(req, res) {
   
+  lgbm <- lgb.load('../../05_saved_models/lightgbm_model')
+  
   # DB connection params
   dbname <- 'ccdefault'
   username <- 'postgres'
-  host <- 'localhost'
   password <- 'root'
+  host <- 'host.docker.internal'
+  port <- 5432
   
   # Establish connection to DB
   conn <- DBI::dbConnect(RPostgres::Postgres(),
                          dbname = dbname,
                          user = username,
+                         password = password,
                          host = host,
-                         password = password)
+                         port = port)
   
   # DB Table to work with
   data <- tbl(conn, 'client_parameters')
@@ -82,7 +75,7 @@ function(req, res) {
       furrr::future_map_dfc(~ select(., contains('name'), contains('value')) %>% 
                 pivot_wider(names_from = 'parameter_name', values_from = 'parameter_value')) %>% 
       unnest(everything()) %>% 
-      select(colnames_model)
+      select(all_of(colnames_model))
     
     data <- data %>%
       as_tibble %>% 
@@ -120,6 +113,7 @@ function(req, res) {
              pay_rate5 = pay_amt5 / limit_bal,
              pay_rate6 = pay_amt6 / limit_bal)
     
+    rm(temp)
     
     # Get model predictions
     data <- data %>%
@@ -154,7 +148,14 @@ function(req, res) {
   # End connection
   DBI::dbDisconnect(conn = conn)
   
+  for(el in ls()) {
+    print(paste(el, format(object.size(get(el)), units = 'KB')))
+  }
+  
+  rm(list = (setdiff(ls(), c('success', 'msg'))))
+  
   # Return response
   list(success = jsonlite::unbox(success),
        msg = jsonlite::unbox(msg))
+  
 }
