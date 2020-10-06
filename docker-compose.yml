@@ -2,6 +2,8 @@ version: '3.8'
 services:
   plumber:
     image: registry.gitlab.com/petarstf/cc_default
+    volumes:
+      - ./:/cc_default
     restart: always
   nginx:
     image: nginx
