@@ -1,12 +1,3 @@
-library(janitor)
-library(lightgbm)
-library(tidyverse)
-library(tidymodels)
-library(plumber)
-
-# API ----
-
-
 #* Return prediction
 #* @get /predict
 #* @serializer unboxedJSON
@@ -113,7 +104,7 @@ function(req, res) {
              pay_rate5 = pay_amt5 / limit_bal,
              pay_rate6 = pay_amt6 / limit_bal)
     
-    rm(temp)
+    rm(temp, params)
     
     # Get model predictions
     data <- data %>%
@@ -132,7 +123,6 @@ function(req, res) {
     
     res$status <- 201
     success <- T
-    status <- 'success'
     msg <- 'Successfully updated db.'
     res$body <- msg
     
@@ -140,7 +130,6 @@ function(req, res) {
     
     res$status <- 200
     success <- F
-    status <- 'failed'
     msg <- 'No new clients to predict'
     res$body <- msg
     
@@ -149,16 +138,15 @@ function(req, res) {
   DBI::dbDisconnect(conn = conn)
   
   # Print our workspace memory usage
-  # for(el in ls()) {
-  #   print(paste(el, format(object.size(get(el)), units = 'KB')))
-  # }
+  for(el in ls()) {
+    print(paste(el, format(object.size(get(el)), units = 'KB')))
+  }
   
   # Clear out workspace memory
   rm(list = (setdiff(ls(), c('success', 'msg'))))
   
   # Call garbage collector
   gc()
-  
   
   # Return response
   list(success = jsonlite::unbox(success),
