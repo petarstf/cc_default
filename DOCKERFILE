@@ -7,13 +7,14 @@ RUN apt-get update \
     libxml2 \
     libpq-dev
 
-RUN mkdir /code
+# Set working dir
 
-# Install R Packages
+RUN mkdir /code
 
 WORKDIR /code
 
-# ADD . /code
+# Install R Packages
+
 
 RUN R -e "install.packages(c('XML', 'xml2', 'devtools'), dependencies = T)"
 
@@ -33,12 +34,16 @@ RUN R -e "devtools::install_version('RPostgres', version = '1.2.1', dependencies
 
 RUN R -e "devtools::install_version('jsonlite', version = '1.7.0', dependencies = T)"
 
-# COPY files
+# COPY necessary files
 
 COPY ./05_saved_models/lightgbm_model ./05_saved_models/lightgbm_model
 COPY ./08_api/plumber.R .
 COPY ./08_api/predict_db.R ./08_api/predict_db.R
 
+# Expose on port
+
 EXPOSE 8000
+
+# Command that runs the container as an executable 
 
 ENTRYPOINT ["R", "-f", "./08_api/plumber.R", "--slave"]

@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   plumber:
-    image: test
+    image: registry.gitlab.com/petarstf/cc_default
     volumes:
       - ./:/code
     restart: always
