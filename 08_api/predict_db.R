@@ -158,4 +158,5 @@ function(req, res) {
   list(success = jsonlite::unbox(success),
        msg = jsonlite::unbox(msg))
   
+  gc()
 }
