@@ -148,11 +148,15 @@ function(req, res) {
   # End connection
   DBI::dbDisconnect(conn = conn)
   
-  for(el in ls()) {
-    print(paste(el, format(object.size(get(el)), units = 'KB')))
-  }
+  # Print our workspace memory usage
+  # for(el in ls()) {
+  #   print(paste(el, format(object.size(get(el)), units = 'KB')))
+  # }
   
+  # Clear out workspace memory
   rm(list = (setdiff(ls(), c('success', 'msg'))))
+  
+  # Call garbage collector
   gc()
   
   
