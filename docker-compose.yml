@@ -3,7 +3,7 @@ services:
   plumber:
     image: registry.gitlab.com/petarstf/cc_default
     volumes:
-      - ./:/cc_default
+      - ./:/root
     restart: always
   nginx:
     image: nginx
