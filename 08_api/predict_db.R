@@ -14,7 +14,7 @@ library(plumber)
 #* @response 400 Error message - string
 function(req, res) {
   
-  lgbm <- lgb.load('../../05_saved_models/lightgbm_model')
+  lgbm <- lgb.load('../05_saved_models/lightgbm_model')
   
   # DB connection params
   dbname <- 'ccdefault'
@@ -153,10 +153,11 @@ function(req, res) {
   }
   
   rm(list = (setdiff(ls(), c('success', 'msg'))))
+  gc()
+  
   
   # Return response
   list(success = jsonlite::unbox(success),
        msg = jsonlite::unbox(msg))
   
-  gc()
 }

@@ -1,9 +1,9 @@
 version: '3.8'
 services:
   plumber:
-    image: registry.gitlab.com/petarstf/cc_default
+    image: test
     volumes:
-      - ./:/root
+      - ./:/code
     restart: always
   nginx:
     image: nginx
@@ -14,12 +14,3 @@ services:
     restart: always
     depends_on:
       - plumber
-  # lb:
-  #   image: 'dockercloud/haproxy'
-  #   links:
-  #    - plumber
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   ports:
-  #     - '80:80'
-  #   restart: always
