@@ -8,10 +8,19 @@ function(req, res) {
   lgbm <- lgb.load('../05_saved_models/lightgbm_model')
   
   # DB connection params
-  dbname <- 'ccdefault'
+  # dbname <- 'rating'
+  # db_table <- 'client_parameters_1'
+  # username <- 'postgres'
+  # password <- 'passw0rd'
+  # host <- '192.168.150.235' # machine host
+  # port <- 5432
+  
+  # Testing purposes DB
+  dbname <- 'ccdefault' # testing db
+  db_table <- 'client_parameters' # testing table
   username <- 'postgres'
-  password <- 'root'
-  host <- 'host.docker.internal'
+  password <- 'root' # testing password
+  host <- 'host.docker.internal' # way to communicate from docker container to localhost
   port <- 5432
   
   # Establish connection to DB
@@ -23,7 +32,7 @@ function(req, res) {
                          port = port)
   
   # DB Table to work with
-  data <- tbl(conn, 'client_parameters')
+  data <- tbl(conn, db_table)
   
   # Select parameters column from client_parameters
   params <- data %>%
@@ -116,7 +125,7 @@ function(req, res) {
     
     # Update db
     pwalk(data, ~ RPostgres::dbClearResult(RPostgres::dbSendQuery(conn = conn,
-                                                                statement = paste('UPDATE client_parameters',
+                                                                statement = paste('UPDATE', db_table,
                                                                                   'SET ml_probability =', ..2, 
                                                                                   ', "ml_class" =', ..3,
                                                                                   'WHERE "client_id" =', ..1))))
@@ -138,9 +147,9 @@ function(req, res) {
   DBI::dbDisconnect(conn = conn)
   
   # Print our workspace memory usage
-  for(el in ls()) {
-    print(paste(el, format(object.size(get(el)), units = 'KB')))
-  }
+  # for(el in ls()) {
+  #   print(paste(el, format(object.size(get(el)), units = 'KB')))
+  # }
   
   # Clear out workspace memory
   rm(list = (setdiff(ls(), c('success', 'msg'))))

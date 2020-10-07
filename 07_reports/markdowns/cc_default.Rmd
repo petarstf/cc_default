@@ -189,10 +189,6 @@ Row
 ### Model comparison
 
 ```{r}
-# temp <- bind_rows(total_metrics %>% filter(model %in% c('Lightgbm - Threshold', 'GLMNET SMOTE')),
-#           log_metrics) %>% 
-#   select(-library)
-
 DT::datatable(data = comparison_tbl)
 ```
 
@@ -271,14 +267,14 @@ gains_plot %>% plotly::layout(legend = list(orientation = "h", x = 0, y = -0.3))
 lift_plot %>% plotly::layout(legend = list(orientation = "h", x = 0, y = -0.3))
 ```
 
-Row
------
+<!-- Row -->
+<!-- ----- -->
 
-### Expected Profit Curve
+<!-- ### Expected Profit Curve -->
 
-```{r}
-threshold_profit_plot %>% plotly::layout(legend = list(orientation = 'h', x = 0, y = -0.3))
-```
+<!-- ```{r} -->
+<!-- threshold_profit_plot %>% plotly::layout(legend = list(orientation = 'h', x = 0, y = -0.3)) -->
+<!-- ``` -->
 
 
 Row
@@ -329,22 +325,4 @@ Row
 ```{r}
 DT::datatable(rem_ltz %>% select(-rowname))
 ```
-
-
-<!-- Row -->
-<!-- ------------------------------------------------------------- -->
-
-
-<!-- ### Stacked Ensemble All -->
-
-<!-- ```{r} -->
-<!-- # stacked_all_conf_mat -->
-<!-- ``` -->
-
-<!-- ### Stacked Ensemble Top 5 -->
-
-<!-- ```{r} -->
-<!-- # stacked_top_5_conf_mat -->
-<!-- ``` -->
-
 
