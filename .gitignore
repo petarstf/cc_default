@@ -25,7 +25,8 @@ test_data.csv
 
 # Saved ML models
 05_saved_models/*
-!05_saved_models/lightgbm_model
+!05_saved_models/lightgbm.txt
+!05_saved_models/lightgbm
 
 # Reports
 07_reports/docker/*
