@@ -39,7 +39,7 @@ y_train <- train_featured_baked %>% mutate(default = as.numeric(as.character(def
 x_test <- data.matrix(test_featured_baked %>% select(-default))
 y_test <- test_featured_baked %>% mutate(default = as.numeric(as.character(default))) %>% pull(default)
 
-dtrain <- lgb.Dataset(data = x_train, label = y_train)
+dtrain <- lgb.Dataset(data = x, label = y)
 dtest <- lgb.Dataset(data = x_test, label = y_test)
 
 # dtest <- lgb.Dataset.create.valid(dtrain, data = x_test, label = y_test)
