@@ -5,7 +5,7 @@
 #* @response 400 Error message - string
 function(req, res) {
   
-  lgbm <- lgb.load('../05_saved_models/lightgbm_model')
+  lgbm <- lgb.load('../05_saved_models/lightgbm.txt')
   
   # DB connection params
   dbname <- 'rating'
