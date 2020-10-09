@@ -93,11 +93,12 @@ lgbm <- lgb.train(params = params,
                   nrounds = 3000,
                   eval = evalf1,
                   force_row_wise = T,
-                  keep_training_booster = T,
+                  reset_data = T,
                   verbose = 2)
 
-
-
+saveRDS.lgb.Booster(object = lgbm,
+                    file = '05_saved_models/lightgbm.rds',
+                    raw = T)
 
 dtrain <- lgb.Dataset(data = x_train, label = y_train)
 
@@ -255,5 +256,4 @@ save.image('03_env/lgbm_conf.RData')
 # cat(lgbm)
 # sink()
 
-lgbm$save_model(filename = '05_saved_models/lightgbm.model', num_iteration = 156)
-lgb.save(lgbm, '05_saved_models/lightgbm2.txt', num_iteration = 156)
+lgb.save(lgbm, '05_saved_models/lightgbm.txt', num_iteration = 156)
