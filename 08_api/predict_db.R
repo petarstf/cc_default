@@ -8,20 +8,20 @@ function(req, res) {
   lgbm <- lgb.load('../05_saved_models/lightgbm_model')
   
   # DB connection params
-  # dbname <- 'rating'
-  # db_table <- 'client_parameters_1'
-  # username <- 'postgres'
-  # password <- 'passw0rd'
-  # host <- '192.168.150.235' # machine host
-  # port <- 5432
+  dbname <- 'rating'
+  db_table <- 'client_parameters_1' # change -> client_parameters
+  username <- 'postgres'
+  password <- 'passw0rd'
+  host <- '192.168.150.235' # machine host -> 'host.docker.internal'
+  port <- 5432
   
   # Testing purposes DB
-  dbname <- 'ccdefault' # testing db
-  db_table <- 'client_parameters' # testing table
-  username <- 'postgres'
-  password <- 'root' # testing password
-  host <- 'host.docker.internal' # way to communicate from docker container to localhost
-  port <- 5432
+  # dbname <- 'ccdefault' # testing db
+  # db_table <- 'client_parameters' # testing table
+  # username <- 'postgres'
+  # password <- 'root' # testing password
+  # host <- 'host.docker.internal' # way to communicate from docker container to localhost
+  # port <- 5432
   
   # Establish connection to DB
   conn <- DBI::dbConnect(RPostgres::Postgres(),
