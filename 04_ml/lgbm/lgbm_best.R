@@ -255,5 +255,5 @@ save.image('03_env/lgbm_conf.RData')
 # cat(lgbm)
 # sink()
 
-lgbm$save_model(filename = '05_saved_models/lightgbm.txt', num_iteration = 156)
+lgbm$save_model(filename = '05_saved_models/lightgbm.model', num_iteration = 156)
 lgb.save(lgbm, '05_saved_models/lightgbm2.txt', num_iteration = 156)
