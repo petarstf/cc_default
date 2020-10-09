@@ -58,8 +58,7 @@ params <- list(objective = 'binary',
                bagging_fraction = 0.152577040181495,
                bagging_seed = 11,
                lambda_l1 = 0.9,
-               num_leaves = 255L,
-               keep_training_booster = T)
+               num_leaves = 255L)
 # 
 # set.seed(11)
 # lgbm_cv <- lgb.cv(params = params,
@@ -94,6 +93,7 @@ lgbm <- lgb.train(params = params,
                   nrounds = 3000,
                   eval = evalf1,
                   force_row_wise = T,
+                  keep_training_booster = T,
                   verbose = 2)
 
 
