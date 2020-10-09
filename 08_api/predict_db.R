@@ -5,7 +5,7 @@
 #* @response 400 Error message - string
 function(req, res) {
   
-  lgbm <- lgb.load('../05_saved_models/lightgbm.txt')
+  lgbm <- readRDS.lgb.Booster('../05_saved_models/lightgbm.rds')
   
   # DB connection params
   dbname <- 'rating'
