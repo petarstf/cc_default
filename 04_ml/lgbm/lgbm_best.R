@@ -15,16 +15,13 @@ source('01_functions/evalf1.R')
 source('01_functions/get_vip_lgbm.R')
 source('01_functions/plot_conf_mat.R')
 
-data %>% 
-  slice(1) %>% 
-  jsonlite::toJSON()
-
 # Recipes ----
 
 rec <- recipe(default ~ ., train_featured) %>% 
   step_rm(id) %>% 
   prep()
 
+data_baked <- bake(rec, data_featured)
 train_featured_baked <- bake(rec, train_featured)
 test_featured_baked <- bake(rec, test_featured)
 
@@ -34,12 +31,15 @@ test_featured_baked <- bake(rec, test_featured)
 
 # Train - Test split ----
 
+x <- data.matrix(data_baked %>% select(-default))
+y <- data_baked %>% mutate(default = as.numeric(as.character(default))) %>% pull(default)
+
 x_train <- data.matrix(train_featured_baked %>% select(-default))
 y_train <- train_featured_baked %>% mutate(default = as.numeric(as.character(default))) %>% pull(default)
 x_test <- data.matrix(test_featured_baked %>% select(-default))
 y_test <- test_featured_baked %>% mutate(default = as.numeric(as.character(default))) %>% pull(default)
 
-dtrain <- lgb.Dataset(data = x_train, label = y_train)
+dtrain <- lgb.Dataset(data = x, label = y)
 dtest <- lgb.Dataset(data = x_test, label = y_test)
 
 # dtest <- lgb.Dataset.create.valid(dtrain, data = x_test, label = y_test)
@@ -90,7 +90,7 @@ params <- list(objective = 'binary',
 set.seed(11)
 lgbm <- lgb.train(params = params,
                   data = dtrain,
-                  nrounds = 156,
+                  nrounds = 3000,
                   eval = evalf1,
                   force_row_wise = T,
                   verbose = 2)
@@ -250,4 +250,4 @@ save.image('03_env/lgbm_conf.RData')
 #                     model = 'LightGBM - Regular - Threshold'))
 
 
-lgb.save(lgbm, '05_saved_models/lightgbm_model', num_iteration = 156)
+lgb.save(lgbm, '05_saved_models/lightgbm', num_iteration = 156)

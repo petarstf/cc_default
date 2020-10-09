@@ -9,10 +9,10 @@ function(req, res) {
   
   # DB connection params
   # dbname <- 'rating'
-  # db_table <- 'client_parameters_1'
+  # db_table <- 'client_parameters_1' # change -> client_parameters
   # username <- 'postgres'
   # password <- 'passw0rd'
-  # host <- '192.168.150.235' # machine host
+  # host <- '192.168.150.235' # machine host -> 'host.docker.internal'
   # port <- 5432
   
   # Testing purposes DB
