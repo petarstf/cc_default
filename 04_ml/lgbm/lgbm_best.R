@@ -249,5 +249,10 @@ save.image('03_env/lgbm_conf.RData')
 #                               roc_auc(lgbm_preds, default, p1)),
 #                     model = 'LightGBM - Regular - Threshold'))
 
+# lgbm <- lgbm$save_model_to_string()
+# sink('05_saved_models/lightgbm.txt')
+# cat(lgbm)
+# sink()
+
 lgbm$save_model(filename = '05_saved_models/lightgbm.txt', num_iteration = 156)
 lgb.save(lgbm, '05_saved_models/lightgbm2.txt', num_iteration = 156)
