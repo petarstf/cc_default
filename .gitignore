@@ -9,3 +9,35 @@ grids/
 env/
 *.png
 *.html
+*.json
+test_data.csv
+
+# Environment
+03_env/*
+!03_env/eda_data.RData
+!03_env/total_metrics.RData
+!03_env/log_data.RData
+!03_env/gains_n_lift.RData
+!03_env/data_problems.RData
+
+# Machine Learning
+04_ml/lgbm/lgbm_final.R
+04_ml/lgbm/lgbm.R
+04_ml/xgboost/xgboost.R
+04_ml/xgboost/xgboost_final.R
+
+# Saved ML models
+05_saved_models/*
+05_saved_models/lightgbm.txt
+05_saved_models/lightgbm2.txt
+05_saved_models/lightgbm
+05_saved_models/lightgbm.model
+!05_saved_models/lightgbm.rds
+
+# Reports
+07_reports/docker/*
+!07_reports/docker/rating_default_doc.docx
+!07_reports/docker/rating_default_doc.pdf
+
+# API
+08_api/predict_db_test.R
